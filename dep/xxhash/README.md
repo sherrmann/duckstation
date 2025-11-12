@@ -1,16 +1,22 @@
 xxHash - Extremely fast hash algorithm
 ======================================
 
-<!-- TODO: Update. -->
-xxHash is an Extremely fast Hash algorithm, running at RAM speed limits.
-It successfully completes the [SMHasher](https://code.google.com/p/smhasher/wiki/SMHasher) test suite
-which evaluates collision, dispersion and randomness qualities of hash functions.
-Code is highly portable, and hashes are identical on all platforms (little / big endian).
+xxHash is an Extremely fast Hash algorithm, processing at RAM speed limits.
+Code is highly portable, and produces hashes identical across all platforms (little / big endian).
+The library includes the following algorithms :
+- XXH32 : generates 32-bit hashes, using 32-bit arithmetic
+- XXH64 : generates 64-bit hashes, using 64-bit arithmetic
+- XXH3 (since `v0.8.0`): generates 64 or 128-bit hashes, using vectorized arithmetic.
+  The 128-bit variant is called XXH128.
+
+All variants successfully complete the [SMHasher](https://code.google.com/p/smhasher/wiki/SMHasher) test suite
+which evaluates the quality of hash functions (collision, dispersion and randomness).
+Additional tests, which evaluate more thoroughly speed and collision properties of 64-bit hashes, [are also provided](https://github.com/Cyan4973/xxHash/tree/dev/tests).
 
 |Branch      |Status   |
 |------------|---------|
-|master      | [![Build Status](https://travis-ci.org/Cyan4973/xxHash.svg?branch=master)](https://travis-ci.org/Cyan4973/xxHash?branch=master) |
-|dev         | [![Build Status](https://travis-ci.org/Cyan4973/xxHash.svg?branch=dev)](https://travis-ci.org/Cyan4973/xxHash?branch=dev) |
+|release     | [![Build Status](https://github.com/Cyan4973/xxHash/actions/workflows/ci.yml/badge.svg?branch=release)](https://github.com/Cyan4973/xxHash/actions?query=branch%3Arelease+) |
+|dev         | [![Build Status](https://github.com/Cyan4973/xxHash/actions/workflows/ci.yml/badge.svg?branch=dev)](https://github.com/Cyan4973/xxHash/actions?query=branch%3Adev+) |
 
 
 
