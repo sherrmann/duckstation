@@ -280,15 +280,17 @@ elseif(NOT ANDROID)
   target_sources(util PRIVATE
     platform_misc_unix.cpp
   )
-  pkg_check_modules(DBUS REQUIRED dbus-1)
-  target_include_directories(util PRIVATE ${DBUS_INCLUDE_DIRS})
+  pkg_check_modules(DBUS QUIET dbus-1)
+  if(DBUS_FOUND)
+    target_include_directories(util PRIVATE ${DBUS_INCLUDE_DIRS})
+  endif()
 
-  if(LINUX)
+  if(LINUX AND TARGET UDEV::UDEV)
     target_link_libraries(util PRIVATE UDEV::UDEV)
   endif()
 endif()
 
-if(NOT WIN32 AND NOT ANDROID)
+if(NOT WIN32 AND NOT ANDROID AND CURL_FOUND)
   target_sources(util PRIVATE
     http_downloader_curl.cpp
   )

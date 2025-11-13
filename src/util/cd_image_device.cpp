@@ -683,7 +683,12 @@ bool CDImage::IsDeviceName(const char* path)
 #elif defined(__linux__) && !defined(__ANDROID__)
 
 #include <fcntl.h>
+#ifdef __has_include
+#if __has_include(<libudev.h>)
+#define HAS_LIBUDEV 1
 #include <libudev.h>
+#endif
+#endif
 #include <linux/cdrom.h>
 #include <scsi/sg.h>
 #include <sys/ioctl.h>
@@ -1093,6 +1098,7 @@ std::vector<std::pair<std::string, std::string>> CDImage::GetDeviceList()
 {
   std::vector<std::pair<std::string, std::string>> ret;
 
+#ifdef HAS_LIBUDEV
   // borrowed from PCSX2
   udev* udev_context = udev_new();
   if (udev_context)
@@ -1119,6 +1125,7 @@ std::vector<std::pair<std::string, std::string>> CDImage::GetDeviceList()
     }
     udev_unref(udev_context);
   }
+#endif
 
   return ret;
 }

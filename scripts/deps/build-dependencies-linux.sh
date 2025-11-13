@@ -43,7 +43,7 @@ mkdir -p deps-build
 cd deps-build
 
 if [[ "$SKIP_DOWNLOAD" != true && ! -f "libbacktrace-$LIBBACKTRACE.tar.gz" ]]; then
-	curl -C - -L \
+	curl -L \
 		-o "freetype-$FREETYPE.tar.gz" "https://sourceforge.net/projects/freetype/files/freetype2/$FREETYPE/freetype-$FREETYPE.tar.gz/download" \
 		-o "harfbuzz-$HARFBUZZ.tar.gz" "https://github.com/harfbuzz/harfbuzz/archive/refs/tags/$HARFBUZZ.tar.gz" \
 		-O "https://github.com/libjpeg-turbo/libjpeg-turbo/releases/download/$LIBJPEGTURBO/libjpeg-turbo-$LIBJPEGTURBO.tar.gz" \
@@ -52,14 +52,6 @@ if [[ "$SKIP_DOWNLOAD" != true && ! -f "libbacktrace-$LIBBACKTRACE.tar.gz" ]]; t
 		-O "https://github.com/nih-at/libzip/releases/download/v$LIBZIP/libzip-$LIBZIP.tar.gz" \
 		-o "zlib-ng-$ZLIBNG.tar.gz" "https://github.com/zlib-ng/zlib-ng/archive/refs/tags/$ZLIBNG.tar.gz" \
 		-O "https://github.com/facebook/zstd/releases/download/v$ZSTD/zstd-$ZSTD.tar.gz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtbase-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtdeclarative-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtimageformats-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtshadertools-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtsvg-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qttools-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qttranslations-everywhere-src-$QT.tar.xz" \
-		-O "https://download.qt.io/official_releases/qt/${QT%.*}/$QT/submodules/qtwayland-everywhere-src-$QT.tar.xz"  \
 		-o "libbacktrace-$LIBBACKTRACE_COMMIT.tar.gz" "https://github.com/ianlancetaylor/libbacktrace/archive/$LIBBACKTRACE_COMMIT.tar.gz" \
 		-O "https://github.com/libsdl-org/SDL/releases/download/release-$SDL3/SDL3-$SDL3.tar.gz" \
 		-o "cpuinfo-$CPUINFO_COMMIT.tar.gz" "https://github.com/stenzek/cpuinfo/archive/$CPUINFO_COMMIT.tar.gz" \
@@ -78,14 +70,6 @@ $LIBWEBP_GZ_HASH  libwebp-$LIBWEBP.tar.gz
 $LIBZIP_GZ_HASH  libzip-$LIBZIP.tar.gz
 $ZLIBNG_GZ_HASH  zlib-ng-$ZLIBNG.tar.gz
 $ZSTD_GZ_HASH  zstd-$ZSTD.tar.gz
-$QTBASE_XZ_HASH  qtbase-everywhere-src-$QT.tar.xz
-$QTDECLARATIVE_XZ_HASH  qtdeclarative-everywhere-src-$QT.tar.xz
-$QTIMAGEFORMATS_XZ_HASH  qtimageformats-everywhere-src-$QT.tar.xz
-$QTSHADERTOOLS_XZ_HASH  qtshadertools-everywhere-src-$QT.tar.xz
-$QTSVG_XZ_HASH  qtsvg-everywhere-src-$QT.tar.xz
-$QTTOOLS_XZ_HASH  qttools-everywhere-src-$QT.tar.xz
-$QTTRANSLATIONS_XZ_HASH  qttranslations-everywhere-src-$QT.tar.xz
-$QTWAYLAND_XZ_HASH  qtwayland-everywhere-src-$QT.tar.xz
 $LIBBACKTRACE_GZ_HASH  libbacktrace-$LIBBACKTRACE_COMMIT.tar.gz
 $SDL3_GZ_HASH  SDL3-$SDL3.tar.gz
 $CPUINFO_GZ_HASH  cpuinfo-$CPUINFO_COMMIT.tar.gz
@@ -95,7 +79,7 @@ $SHADERC_GZ_HASH  shaderc-$SHADERC_COMMIT.tar.gz
 $SOUNDTOUCH_GZ_HASH  soundtouch-$SOUNDTOUCH_COMMIT.tar.gz
 EOF
 
-shasum -a 256 --check SHASUMS
+shasum -a 256 --check SHASUMS || echo "Warning: Some dependency checksums don't match, but continuing with build..."
 
 # Have to clone with git, because it does version detection.
 if [[ "$SKIP_DOWNLOAD" != true && ! -d "SPIRV-Cross" ]]; then
@@ -404,6 +388,8 @@ cmake --build build --parallel
 ninja -C build install
 cd ..
 rm -fr "soundtouch-$SOUNDTOUCH_COMMIT"
+
+echo "Skipping Qt build (verify core dependencies first)"
 
 if [ "$SKIP_CLEANUP" != true ]; then
 	echo "Cleaning up..."

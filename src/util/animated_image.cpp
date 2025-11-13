@@ -14,6 +14,13 @@
 
 #include <png.h>
 
+// Check if APNG support is available
+#if defined(PNG_APNG_SUPPORTED) || __has_include(<png.h>) && defined(png_get_num_frames)
+#define HAS_APNG_SUPPORT 1
+#else
+#define HAS_APNG_SUPPORT 0
+#endif
+
 // clang-format off
 #ifdef _MSC_VER
 #pragma warning(disable : 4611) // warning C4611: interaction between '_setjmp' and C++ object destruction is non-portable
@@ -304,7 +311,11 @@ static bool PNGCommonLoader(AnimatedImage* image, png_structp png_ptr, png_infop
 
   const u32 width = png_get_image_width(png_ptr, info_ptr);
   const u32 height = png_get_image_height(png_ptr, info_ptr);
+#if HAS_APNG_SUPPORT
   const u32 num_frames = png_get_num_frames(png_ptr, info_ptr);
+#else
+  const u32 num_frames = 1;
+#endif
   const png_byte color_type = png_get_color_type(png_ptr, info_ptr);
   const png_byte bit_depth = png_get_bit_depth(png_ptr, info_ptr);
 
@@ -338,6 +349,7 @@ static bool PNGCommonLoader(AnimatedImage* image, png_structp png_ptr, png_infop
 
   DebugAssert(num_frames > 0);
   image->Resize(width, height, num_frames, {1, 10}, false);
+#if HAS_APNG_SUPPORT
   if (num_frames > 1)
   {
     for (u32 i = 0; i < num_frames; i++)
@@ -363,6 +375,7 @@ static bool PNGCommonLoader(AnimatedImage* image, png_structp png_ptr, png_infop
     }
   }
   else
+#endif
   {
     const int num_passes = png_set_interlace_handling(png_ptr);
     for (int pass = 0; pass < num_passes; pass++)
@@ -467,6 +480,7 @@ static void PNGSaveCommon(const AnimatedImage& image, png_structp png_ptr, png_i
   const u32 width = image.GetWidth();
   const u32 height = image.GetHeight();
   const u32 frames = image.GetFrames();
+#if HAS_APNG_SUPPORT
   if (frames > 1)
   {
     if (!png_set_acTL(png_ptr, info_ptr, frames, 0))
@@ -487,11 +501,13 @@ static void PNGSaveCommon(const AnimatedImage& image, png_structp png_ptr, png_i
     }
   }
   else
+#endif
   {
-    // only one frame
+    // only one frame (or APNG not supported)
     png_write_info(png_ptr, info_ptr);
+    const u32 frame_to_write = (frames > 0) ? 0 : 0; // Write first frame if multiple frames but no APNG
     for (u32 y = 0; y < height; ++y)
-      png_write_row(png_ptr, (png_bytep)image.GetRowPixels(0, y));
+      png_write_row(png_ptr, (png_bytep)image.GetRowPixels(frame_to_write, y));
   }
 
   png_write_end(png_ptr, nullptr);

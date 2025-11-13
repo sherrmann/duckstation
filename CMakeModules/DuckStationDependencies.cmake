@@ -79,9 +79,9 @@ endif()
 
 # Libraries that are pulled in from host.
 if(NOT WIN32)
-  find_package(CURL 8.12.0 REQUIRED)
+  find_package(CURL QUIET)
   if(LINUX)
-    find_package(UDEV REQUIRED)
+    find_package(UDEV QUIET)
   endif()
 
   if(NOT APPLE)

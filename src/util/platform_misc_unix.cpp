@@ -12,7 +12,12 @@
 #include "common/small_string.h"
 
 #include <cinttypes>
+#ifdef __has_include
+#if __has_include(<dbus/dbus.h>)
+#define HAS_DBUS 1
 #include <dbus/dbus.h>
+#endif
+#endif
 #include <mutex>
 #include <signal.h>
 #include <spawn.h>
@@ -32,6 +37,7 @@ bool PlatformMisc::InitializeSocketSupport(Error* error)
   return true;
 }
 
+#ifdef HAS_DBUS
 static bool SetScreensaverInhibitDBus(const bool inhibit_requested, const char* program_name, const char* reason)
 {
 #define DBUS_FUNCS(X)                                                                                                  \
@@ -164,10 +170,15 @@ static bool SetScreensaverInhibitDBus(const bool inhibit_requested, const char* 
 
 #undef DBUS_FUNCS
 }
+#endif // HAS_DBUS
 
 static bool SetScreensaverInhibit(bool inhibit)
 {
+#ifdef HAS_DBUS
   return SetScreensaverInhibitDBus(inhibit, "DuckStation", "DuckStation VM is running.");
+#else
+  return false;
+#endif
 }
 
 static bool s_screensaver_suspended;

@@ -23,6 +23,7 @@
 #include "opengl_context_egl_android.h"
 #else
 #ifdef ENABLE_EGL
+#include "opengl_context_egl.h"
 #ifdef ENABLE_WAYLAND
 #include "opengl_context_egl_wayland.h"
 #endif
@@ -162,8 +163,10 @@ std::unique_ptr<OpenGLContext> OpenGLContext::Create(WindowInfo& wi, SurfaceHand
   if (wi.type == WindowInfo::Type::Wayland)
     context = OpenGLContextEGLWayland::Create(wi, surface, versions_to_try, error);
 #endif
+#if defined(ENABLE_EGL)
   if (wi.type == WindowInfo::Type::Surfaceless)
     context = OpenGLContextEGL::Create(wi, surface, versions_to_try, error);
+#endif
 #endif
 #ifdef ENABLE_SDL
   if (wi.type == WindowInfo::Type::SDL)

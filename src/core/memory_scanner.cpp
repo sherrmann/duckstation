@@ -1,6 +1,8 @@
 // SPDX-FileCopyrightText: 2019-2025 Connor McLaughlin <stenzek@gmail.com> and contributors.
 // SPDX-License-Identifier: CC-BY-NC-ND-4.0
 
+#include "fmt/format.h"
+
 #include "memory_scanner.h"
 #include "bus.h"
 #include "cpu_core.h"
@@ -11,8 +13,6 @@
 #include "common/log.h"
 #include "common/path.h"
 #include "common/ryml_helpers.h"
-
-#include "fmt/format.h"
 
 LOG_CHANNEL(Cheats);
 

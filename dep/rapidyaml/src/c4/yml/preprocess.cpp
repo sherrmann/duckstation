@@ -1,5 +1,5 @@
 #include "c4/yml/preprocess.hpp"
-#include "c4/yml/detail/dbgprint.hpp"
+#include "c4/yml/detail/parser_dbg.hpp"
 
 /** @file preprocess.hpp Functions for preprocessing YAML prior to parsing. */
 
@@ -21,7 +21,7 @@ C4_ALWAYS_INLINE bool _is_idchar(char c)
         || (c == '_' || c == '-' || c == '~' || c == '$');
 }
 
-enum _ppstate : int { kReadPending = 0, kKeyPending = 1, kValPending = 2 };
+typedef enum { kReadPending = 0, kKeyPending = 1, kValPending = 2 } _ppstate;
 C4_ALWAYS_INLINE _ppstate _next(_ppstate s)
 {
     int n = (int)s + 1;
